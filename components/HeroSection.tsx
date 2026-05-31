@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import heroOne from "../images/1.jpg";
 import heroTwo from "../images/6.jpg";
 
@@ -15,22 +15,62 @@ export default function HeroSection() {
   const [contentKey, setContentKey] = useState(0);
   const [prevActive, setPrevActive] = useState<number | null>(null);
   const [animating, setAnimating] = useState(false);
+  const activeRef = useRef(active);
+  const lastScrollY = useRef(0);
+  const scrollAccumulator = useRef(0);
+  const scrollCooldown = useRef(false);
 
   useEffect(() => {
+    // initialize last scroll position
+    lastScrollY.current = window.scrollY;
+
     const timer = window.setInterval(() => {
+      if (animating) return;
       setSlideDirection("down");
+      setPrevActive(activeRef.current);
       setActive((current) => (current + 1) % images.length);
       setContentKey((current) => current + 1);
     }, 6500);
 
-    const handleScroll = () => {
-      const progress = window.scrollY % 320;
+    const THRESH = 120; // pixels to consider an intentional scroll
 
-      if (progress > 240) {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastScrollY.current;
+
+      // ignore tiny scroll jitter
+      if (Math.abs(delta) < 6) {
+        lastScrollY.current = y;
+        return;
+      }
+
+      scrollAccumulator.current += delta;
+      lastScrollY.current = y;
+
+      if (scrollCooldown.current) return;
+
+      if (scrollAccumulator.current >= THRESH) {
+        // scrolled down
+        scrollCooldown.current = true;
         setSlideDirection("down");
+        setPrevActive(activeRef.current);
         setActive((current) => (current + 1) % images.length);
-        setContentKey((current) => current + 1);
-        window.scrollTo({ top: window.scrollY - progress, behavior: "smooth" });
+        setContentKey((c) => c + 1);
+        setTimeout(() => {
+          scrollCooldown.current = false;
+          scrollAccumulator.current = 0;
+        }, ANIM_DURATION + 300);
+      } else if (scrollAccumulator.current <= -THRESH) {
+        // scrolled up
+        scrollCooldown.current = true;
+        setSlideDirection("up");
+        setPrevActive(activeRef.current);
+        setActive((current) => (current - 1 + images.length) % images.length);
+        setContentKey((c) => c + 1);
+        setTimeout(() => {
+          scrollCooldown.current = false;
+          scrollAccumulator.current = 0;
+        }, ANIM_DURATION + 300);
       }
     };
 
@@ -40,7 +80,12 @@ export default function HeroSection() {
       window.clearInterval(timer);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [images.length]);
+  }, [images.length, animating]);
+
+  // keep a ref of the active index for event handlers
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   const handlePrev = () => {
     if (animating) return;
@@ -115,13 +160,11 @@ export default function HeroSection() {
         <button
           onClick={handlePrev}
           aria-label="Previous"
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg transition-opacity ${
-            hovered ? "opacity-100" : "opacity-0"
-          }`}
+          className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-sm bg-white flex items-center justify-center shadow-md border border-gray-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5 text-navy-950"
+            className="w-6 h-6 text-navy-950 rotate-180"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -141,13 +184,11 @@ export default function HeroSection() {
         <button
           onClick={handleNext}
           aria-label="Next"
-          className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg transition-opacity ${
-            hovered ? "opacity-100" : "opacity-0"
-          }`}
+          className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 z-30 w-14 h-14 rounded-sm bg-white flex items-center justify-center shadow-md border border-gray-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5 text-navy-950 rotate-180"
+            className="w-6 h-6 text-navy-950"
             viewBox="0 0 20 20"
             fill="currentColor"
           >

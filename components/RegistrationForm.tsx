@@ -70,19 +70,17 @@ export default function RegistrationForm({ onResult }: Props) {
         </div>
 
         {/* Form card */}
-        <div className="glass-card p-8 md:p-10">
+        <div className="register-card p-6 md:p-8">
           {/* How it works */}
-          <div className="flex gap-6 mb-8 p-4 rounded-xl bg-ocean-400/5 border border-ocean-400/10">
+          <div className="register-steps flex gap-6 mb-6">
             {[
               { step: "1", label: "Share your focus" },
               { step: "2", label: "AI matches your session" },
               { step: "3", label: "Get your invite" },
             ].map(({ step, label }) => (
-              <div key={step} className="flex-1 text-center">
-                <div className="w-8 h-8 rounded-full bg-ocean-400/20 text-ocean-400 font-mono text-xs flex items-center justify-center mx-auto mb-1">
-                  {step}
-                </div>
-                <p className="text-white/40 text-xs">{label}</p>
+              <div key={step} className="flex-1 text-center px-2">
+                <div className="mx-auto mb-2 register-badge">{step}</div>
+                <p className="text-white/40 text-sm">{label}</p>
               </div>
             ))}
           </div>
@@ -97,7 +95,7 @@ export default function RegistrationForm({ onResult }: Props) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sarah Al-Mansoori"
-                className="form-input w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 text-sm"
+                className="form-input w-full px-5 py-4 rounded-xl bg-white/3 border border-white/8 text-white placeholder-white/30 text-sm"
               />
             </div>
 
@@ -110,7 +108,7 @@ export default function RegistrationForm({ onResult }: Props) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. sarah@company.ae"
-                className="form-input w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 text-sm"
+                className="form-input w-full px-5 py-4 rounded-xl bg-white/3 border border-white/8 text-white placeholder-white/30 text-sm"
               />
             </div>
 
@@ -123,7 +121,7 @@ export default function RegistrationForm({ onResult }: Props) {
                 onChange={(e) => setFocus(e.target.value)}
                 placeholder="e.g. We're struggling with warehouse visibility and reducing last-mile delivery costs. Looking for AI-driven solutions to predict demand..."
                 rows={4}
-                className="form-input w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 text-sm resize-none"
+                className="form-input w-full px-5 py-4 rounded-xl bg-white/3 border border-white/8 text-white placeholder-white/30 text-sm resize-none"
               />
               <p className="text-white/25 text-xs mt-1">
                 The more specific, the better your session match.
@@ -139,7 +137,7 @@ export default function RegistrationForm({ onResult }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-4 rounded-xl bg-gradient-to-r from-ocean-400 to-blue-500 text-navy-950 font-bold text-sm tracking-wide hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              className="btn-primary cta-large w-full bg-gradient-to-r from-ocean-400 to-blue-500 text-navy-950 font-bold tracking-wide hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
               {loading ? (
                 <>
